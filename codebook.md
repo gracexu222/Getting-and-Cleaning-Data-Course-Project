@@ -1,4 +1,5 @@
-#Getting and Cleaning Data Course Project
+# Getting and Cleaning Data Course Project
+
 Instructions for project The purpose of this project is to demonstrate your ability to collect, work with, and clean a data set. The goal is to prepare tidy data that can be used for later analysis. You will be graded by your peers on a series of yes/no questions related to the project. You will be required to submit: 1) a tidy data set as described below, 2) a link to a Github repository with your script for performing the analysis, and 3) a code book that describes the variables, the data, and any transformations or work that you performed to clean up the data called CodeBook.md. You should also include a README.md in the repo with your scripts. This repo explains how all of the scripts work and how they are connected.
 
 One of the most exciting areas in all of data science right now is wearable computing - see for example this article . Companies like Fitbit, Nike, and Jawbone Up are racing to develop the most advanced algorithms to attract new users. The data linked to from the course website represent data collected from the accelerometers from the Samsung Galaxy S smartphone. A full description is available at the site where the data was obtained:
@@ -23,7 +24,7 @@ The body linear acceleration and angular velocity were derived in time to obtain
 
 A Fast Fourier Transform (FFT) was applied to some of these signals producing fBodyAcc-XYZ, fBodyAccJerk-XYZ, fBodyGyro-XYZ, fBodyAccJerkMag, fBodyGyroMag, fBodyGyroJerkMag. (Note the ‘f’ to indicate frequency domain signals).
 
-###Description of abbreviations of measurements
+### Description of abbreviations of measurements
 
 1. leading t or f is based on time or frequency measurements.
 2. Body = related to body movement.
@@ -68,7 +69,8 @@ The experiments have been carried out with a group of 30 volunteers within an ag
 
 The sensor signals (accelerometer and gyroscope) were pre-processed by applying noise filters and then sampled in fixed-width sliding windows. From each window, a vector of features was obtained by calculating variables from the time and frequency domain.
 
-##Download the Data
+## Download the Data
+
 filesPath <- "C:/Users/jb/Documents/Analytics course/coursera getting and cleaning data/course project/UCI HAR Dataset"
 setwd(filesPath)
 if(!file.exists("./data")){dir.create("./data")
@@ -78,13 +80,15 @@ download.file(fileUrl,destfile="./data/Dataset.zip",method="curl")
 
 unzip("UCI HAR Dataset.zip")
 
-##Load required packages
+## Load required packages
+
 library(dplyr)
 
 library(data.table)
 
 library(tidyr)
-###Files in folder ‘UCI HAR Dataset’ that will be used are:
+
+### Files in folder ‘UCI HAR Dataset’ that will be used are:
 
 1.SUBJECT FILES
 
@@ -103,7 +107,7 @@ library(tidyr)
 
 5.activity_labels.txt - Links the class labels with their activity name.
 
-##Read the above files and create data tables.
+## Read the above files and create data tables.
 
 unzip("UCI HAR Dataset.zip")
 XTest<- read.table("UCI HAR Dataset/test/X_test.txt")
@@ -114,26 +118,26 @@ XTrain<- read.table("UCI HAR Dataset/train/X_train.txt")
 YTrain<- read.table("UCI HAR Dataset/train/Y_train.txt")
 SubjectTrain<- read.table("UCI HAR Dataset/train/subject_train.txt")
 
-##1. Merges the training and the test sets to create one data set.
+## 1. Merges the training and the test sets to create one data set.
 features<-read.table("UCI HAR Dataset/features.txt")
 activity<-read.table("UCI HAR Dataset/activity_labels.txt")
 
 X<-rbind(XTest, XTrain)
 Y<-rbind(YTest, YTrain)
 subject<-rbind(SubjectTest, SubjectTrain)
-##2. Extracts only the measurements on the mean and standard deviation for each measurement.
+## 2. Extracts only the measurements on the mean and standard deviation for each measurement.
 index<-grep("mean\\(\\)|std\\(\\)", features[,2])
 length(index)
 
 X<-X[,index]
 dim(X)
-##3. Use descriptive activity names to name the activities in the data set.
+## 3. Use descriptive activity names to name the activities in the data set.
 index<-grep("mean\\(\\)|std\\(\\)", features[,2])
 length(index)
 
 X<-X[,index]
 dim(X)
-##4.Appropriately labels the data set with descriptive variable names.
+## 4.Appropriately labels the data set with descriptive variable names.
 names<-features[index,2]
 names(X)<-names
 names(subject)<-"SubjectID"
@@ -141,7 +145,7 @@ names(Y)<-"Activity"
 
 CleanedData<-cbind(subject, Y, X)
 head(CleanedData[,c(1:4)])
-##5.From the data set in step 4, creates a second, independent tidy data set with the average of each variable for each activity and each subject.
+## 5.From the data set in step 4, creates a second, independent tidy data set with the average of each variable for each activity and each subject.
 CleanedData<-data.table(CleanedData)
 TidyData <- CleanedData[, lapply(.SD, mean), by = 'SubjectID,Activity']
 dim(TidyData)
